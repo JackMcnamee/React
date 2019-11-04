@@ -6,6 +6,9 @@ const bodyParser = require('body-parser');
 
 const cors = require('cors');
 
+const mongoDB = 'mongodb+srv://admin:admin@cluster0-lk0ot.mongodb.net/test?retryWrites=true&w=majority';
+mongoose.connect(mongoDB,{useNewUrlParser:true});
+
 app.use(cors());
 
 app.use(function(req, res, next) {
@@ -22,6 +25,15 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+const Schema = mongoose.Schema;
+
+const movieSchema = new Schema({
+    title:String,
+    year:String,
+    poster:String
+})
+
+const MovieModel = mongoose.model('movie', movieSchema);
 
 app.get('/', (req, res) => res.send('Hello World!'))
 
@@ -48,7 +60,11 @@ app.get('/test', (req, res) => {
 
 app.get('/api/movies', (req, res) => {
 
-    const myMovies = [
+    MovieModel.find((error, data) =>{
+        res.json({movies:data});
+    })
+
+    /*const myMovies = [
         {
             "Title": "Avengers: Infinity War",
             "Year": "2018",
@@ -65,7 +81,7 @@ app.get('/api/movies', (req, res) => {
         {
             movies: myMovies,
             message: 'Data Sent'
-        });
+        });*/
 })
 
 app.post('/api/movies', (req,res) =>{
