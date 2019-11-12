@@ -1,26 +1,47 @@
 import React from 'react';
 import axios from 'axios';
 
-class Create extends React.Component {
+class Edit extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { Title: '', Year: '', Poster: '' };
 
-        this.handleChangeMovieTitle = this.handleChangeMovieTitle.bind(this);
-        this.handleChangeMovieYear = this.handleChangeMovieYear.bind(this);
-        this.handleChangeMoviePoster = this.handleChangeMoviePoster.bind(this);
+        this.state = { 
+            Title: '', 
+            Year: '', 
+            Poster: '', 
+            _id:'' 
+        };
+
+        this.handleEditMovieTitle = this.handleEditMovieTitle.bind(this);
+        this.handleEditMovieYear = this.handleEditMovieYear.bind(this);
+        this.handleEditMoviePoster = this.handleEditMoviePoster.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleChangeMovieTitle(e) {
+    componentDidMount(){
+        // listening for a get request in server.js
+        alert(this.props.match.params.id);
+        axios.get("http://localhost:4000/api/movies/" + this.props.match.params.id)
+        .then((response) =>{
+            this.setState({
+                Title:response.data.title,
+                Year:response.data.year,
+                Poster:response.data.poster,
+                _id:response.data._id
+            })
+        })
+        .catch();
+    }
+
+    handleEditMovieTitle(e) {
         this.setState({ Title: e.target.value });
     }
 
-    handleChangeMovieYear(e) {
+    handleEditMovieYear(e) {
         this.setState({ Year: e.target.value });
     }
 
-    handleChangeMoviePoster(e) {
+    handleEditMoviePoster(e) {
         this.setState({ Poster: e.target.value });
     }
 
@@ -35,21 +56,16 @@ class Create extends React.Component {
             poster: this.state.Poster
         }; 
 
-        axios.post('http://localhost:4000/api/movies', newMovie)
+        axios.put("http://localhost:4000/api/movies/" + this.state._id, newMovie)
         .then()
         .catch();
 
-        this.setState({
-            Title: '',
-            Year: '',
-            Poster: ''
-        });
     }
 
-    render() { 
+    render() {
         return (
             <div>
-                <h2>This is the Create component</h2>
+                <h2>This is the Edit component</h2>
                 <form onSubmit={this.handleSubmit}>
 
                     <div className="form-group">
@@ -58,7 +74,7 @@ class Create extends React.Component {
                             type="text"
                             className="form-control"
                             value={this.state.Title}
-                            onChange={this.handleChangeMovieTitle}
+                            onChange={this.handleEditMovieTitle}
                         />     
 
                         <label>Movie Release Year:</label>
@@ -66,7 +82,7 @@ class Create extends React.Component {
                             type="text"
                             className="form-control"
                             value={this.state.Year}
-                            onChange={this.handleChangeMovieYear}
+                            onChange={this.handleEditMovieYear}
                         />
 
                         <label>Movie Poster URL:</label>
@@ -74,7 +90,7 @@ class Create extends React.Component {
                             className="form-control"
                             rows='6'
                             value={this.state.Poster}
-                            onChange={this.handleChangeMoviePoster}
+                            onChange={this.handleEditMoviePoster}
                         />
                     </div>
 
@@ -88,4 +104,4 @@ class Create extends React.Component {
     }
 }
 
-export default Create;
+export default Edit;
